@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Oral Cancer Detector</title>
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #f5f7fa; color: #111; font-family: 'Segoe UI', Inter, sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* ── TOP NAV ── */
+        .top-nav {
+            background: #2d2d2d; border-bottom: 3px solid #7c3aed;
+            padding: 12px 24px; display: flex; align-items: center;
+            justify-content: space-between; position: fixed;
+            top: 0; left: 0; right: 0; z-index: 100;
+        }
+        .top-nav .brand { font-size: 1.1rem; font-weight: 700; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+        .top-nav .brand i { color: #f97316; }
+        .top-nav .right { display: flex; align-items: center; gap: 12px; }
+        .top-nav .admin-label { color: #aaa; font-size: 0.82rem; }
+        .btn-logout {
+            background: #7c3aed; color: #fff; border: none;
+            padding: 6px 16px; border-radius: 6px; font-size: 0.82rem;
+            font-weight: 600; text-decoration: none; cursor: pointer;
+        }
+        .btn-logout:hover { background: #6d28d9; color: #fff; }
+
+        /* ── LAYOUT ── */
+        .admin-layout { display: flex; padding-top: 48px; min-height: 100vh; }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: 200px; background: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            position: fixed; top: 48px; left: 0; bottom: 0;
+            padding: 20px 0; display: flex; flex-direction: column;
+        }
+        .sidebar-section { padding: 12px 18px 6px; font-size: 0.68rem; color: #444; letter-spacing: 1.5px; text-transform: uppercase; }
+        .sidebar-nav { list-style: none; padding: 0; }
+        .sidebar-nav li a {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 18px; color: #888; text-decoration: none;
+            font-size: 0.85rem; transition: all 0.2s;
+        }
+        .sidebar-nav li a:hover { background: rgba(255,255,255,0.04); color: #111; }
+        .sidebar-nav li a.active { background: rgba(124,58,237,0.12); color: #7c3aed; border-left: 3px solid #7c3aed; }
+        .sidebar-nav li a i { width: 16px; }
+
+        /* ── MAIN ── */
+        .main-content { margin-left: 200px; flex: 1; padding: 28px; }
+    </style>
+</head>
+<body>
+
+<!-- Top Nav -->
+<nav class="top-nav">
+    <a href="{% url 'admin_home' %}" class="brand">
+        <i class="bi bi-heart-pulse-fill"></i> Oral Cancer Detector
+    </a>
+    <div class="right">
+        <span class="admin-label">Admin Panel</span>
+        <a href="{% url 'admin_login' %}" class="btn-logout">Logout</a>
+    </div>
+</nav>
+
+<div class="admin-layout">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-section">Navigation</div>
+        <ul class="sidebar-nav">
+            <li>
+                <a href="{% url 'admin_home' %}" class="{% block dashboard_active %}{% endblock %}">
+                    <i class="bi bi-grid"></i> Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'view_registered_users' %}" class="{% block user_list %}{% endblock %}">
+                    <i class="bi bi-people"></i> Manage Users
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-section" style="margin-top: auto;">System</div>
+        <ul class="sidebar-nav">
+            <li>
+                <a href="{% url 'admin_login' %}">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        {% block content %}
+        {% endblock %}
+    </div>
+</div>
+
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>
+

@@ -1,0 +1,137 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>Oral Cancer - User Dashboard</title>
+
+    <!-- Favicons -->
+    <link href="{% static 'img/favicon.png' %}" rel="icon">
+    <link href="{% static 'img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Vendor CSS -->
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/aos/aos.css' %}" rel="stylesheet">
+
+    <!-- Main CSS -->
+    <link href="{% static 'css/main.css' %}" rel="stylesheet">
+
+    <!-- USER DASHBOARD: Beautiful Dark Background + Instant Load -->
+    <style>
+        body {
+            background: url("{% static 'img/oral_cancer.jpg' %}") center center / cover no-repeat fixed !important;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Perfect dark overlay — image clearly visible & vibrant */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.60);   /* ← Best value: dark but image shines through */
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Remove PhotoFolio's dark hero overlay */
+        #hero::before, #hero {
+            background: transparent !important;
+        }
+
+        /* All content above overlay */
+        header, main, .container, .card {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Instant appearance — no 1.5s delay */
+        [data-aos] {
+            opacity: 1 !important;
+            transform: none !important;
+        }
+
+        /* Beautiful white text */
+        h1, h2, h3, p, .navbar .nav-link {
+            color: white !important;
+        }
+
+        /* Active & hover menu items in red */
+        .navbar .nav-link:hover,
+        .navbar .nav-link.active {
+            color: #7c3aed !important;
+            font-weight: bold;
+        }
+
+        /* Glass effect for cards/tables (optional but looks premium) */
+        .card, .table {
+            background: rgba(30, 30, 40, 0.75) !important;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 99, 71, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header id="header" class="header d-flex align-items-center fixed-top">
+        <div class="container-fluid d-flex align-items-center justify-content-between">
+
+            <a href="{% url 'user_home' %}" class="logo d-flex align-items-center me-auto me-lg-0">
+                <h1 style="color: #7c3aed; font-weight: bold;">Oral Cancer</h1>
+            </a>
+
+            <nav id="navbar" class="navbar">
+                <ul>
+                    <li><a class="nav-link {% block home %}{% endblock %}" href="{% url 'user_home' %}">Home</a></li>
+                    <li><a class="nav-link {% block train %}{% endblock %}" href="{% url 'train_model' %}">Train Model</a></li>
+                    <li><a class="nav-link {% block predict %}{% endblock %}" href="{% url 'predict_image' %}">Predict</a></li>
+                    <li><a class="nav-link {% block profile %}{% endblock %}" href="{% url 'user_profile' %}">Profile</a></li>
+                    <li><a class="nav-link text-danger" href="{% url 'index' %}">Logout</a></li>
+                </ul>
+            </nav>
+
+            <i class="mobile-nav-toggle mobile-nav-show bi bi-list"></i>
+            <i class="mobile-nav-toggle mobile-nav-hide d-none bi bi-x"></i>
+        </div>
+    </header>
+
+    <!-- Hero Section (clean & minimal) -->
+    <section id="hero" class="d-flex align-items-center justify-content-center text-center" style="min-height: 40vh;">
+        <div class="container">
+            <h2 class="display-5 fw-bold" style="color: #7c3aed; text-shadow: 0 0 20px rgba(124,58,237,0.5);">
+                Oral Cancer Detection System
+            </h2>
+            <p class="lead" style="color: #ddd;">Early Detection Saves Lives</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main id="main" class="pb-5">
+        <div class="container">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+
+    <!-- Scroll Top -->
+    <a href="#" class="scroll-top d-flex align-items-center justify-content-center">
+        <i class="bi bi-arrow-up-short"></i>
+    </a>
+
+    <!-- Vendor JS -->
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'vendor/aos/aos.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

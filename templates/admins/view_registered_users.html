@@ -1,0 +1,130 @@
+{% extends 'admins/admin_base.html' %}
+{% load static %}
+{% block user_list %}active{% endblock %}
+
+{% block content %}
+<style>
+.users-wrap { padding: 32px 28px; }
+.page-title { font-size: 1.8rem; font-weight: 700; color: #111; margin-bottom: 4px; }
+.page-sub { color: #888; font-size: 0.88rem; margin-bottom: 28px; }
+
+.users-table-card {
+    background: #fff; border: 1px solid #e5e7eb;
+    border-radius: 14px; overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.users-table { width: 100%; border-collapse: collapse; }
+.users-table thead tr {
+    background: #f9fafb; border-bottom: 2px solid #e5e7eb;
+}
+.users-table thead th {
+    padding: 13px 18px; font-size: 0.72rem; font-weight: 700;
+    color: #555; letter-spacing: 1px; text-transform: uppercase;
+    text-align: left;
+}
+.users-table tbody tr {
+    border-bottom: 1px solid #f3f4f6; transition: background 0.15s;
+}
+.users-table tbody tr:last-child { border-bottom: none; }
+.users-table tbody tr:hover { background: #faf9ff; }
+.users-table tbody td {
+    padding: 14px 18px; font-size: 0.88rem; color: #111; vertical-align: middle;
+}
+
+.badge-user {
+    background: #ede9fe; color: #7c3aed;
+    padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+}
+.badge-admin {
+    background: #fee2e2; color: #dc2626;
+    padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+}
+.badge-activated {
+    background: #dcfce7; color: #16a34a;
+    padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+}
+.badge-pending {
+    background: #fef9c3; color: #ca8a04;
+    padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+}
+
+.btn-activate {
+    background: #7c3aed; color: #fff; border: none;
+    padding: 6px 18px; border-radius: 8px; font-size: 0.8rem;
+    font-weight: 600; text-decoration: none; cursor: pointer;
+    transition: background 0.2s;
+}
+.btn-activate:hover { background: #6d28d9; color: #fff; }
+
+.total-row {
+    padding: 16px 20px; background: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+    font-size: 0.85rem; color: #555;
+}
+.total-row strong { color: #7c3aed; }
+
+.empty-state { padding: 60px 20px; text-align: center; color: #aaa; font-size: 0.9rem; }
+</style>
+
+<div class="users-wrap">
+    <div class="page-title">Manage Users</div>
+    <div class="page-sub">View and activate registered user accounts</div>
+
+    <div class="users-table-card">
+        <table class="users-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in data %}
+                <tr>
+                    <td style="color:#aaa;">{{ forloop.counter }}</td>
+                    <td><strong>{{ user.name }}</strong></td>
+                    <td style="color:#555;">{{ user.email }}</td>
+                    <td>
+                        {% if user.role == 'admin' %}
+                            <span class="badge-admin">Admin</span>
+                        {% else %}
+                            <span class="badge-user">User</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.status == 'waiting' %}
+                            <span class="badge-pending">⏳ Pending</span>
+                        {% else %}
+                            <span class="badge-activated">✓ Activated</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.status == 'waiting' %}
+                            <a href="/AdminActivaUsers/?uid={{ user.id }}" class="btn-activate">Activate</a>
+                        {% else %}
+                            <span style="color:#16a34a; font-size:0.82rem; font-weight:600;">✓ Active</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="empty-state">No registered users found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if data %}
+        <div class="total-row">
+            Total Users: <strong>{{ data|length }}</strong>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

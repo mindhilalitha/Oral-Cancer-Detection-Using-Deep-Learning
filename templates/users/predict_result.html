@@ -1,0 +1,213 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predict - Oral Cancer</title>
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #f5f7fa; color: #111; font-family: 'Segoe UI', Inter, sans-serif; min-height: 100vh; display: flex; }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: 220px; min-height: 100vh;
+            background: #ffffff; border-right: 1px solid #e5e7eb;
+            display: flex; flex-direction: column; padding: 24px 0;
+            position: fixed; top: 0; left: 0; bottom: 0;
+        }
+        .sidebar-brand { padding: 0 20px 28px 20px; font-size: 1.1rem; font-weight: 700; color: #7c3aed; display: flex; align-items: center; gap: 8px; text-decoration: none; }
+        .sidebar-brand i { color: #f97316; }
+        .sidebar-section { padding: 8px 20px 4px 20px; font-size: 0.7rem; color: #444; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 8px; }
+        .sidebar-nav { list-style: none; padding: 0; }
+        .sidebar-nav li a {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 20px; color: #555; text-decoration: none;
+            font-size: 0.88rem; transition: all 0.2s;
+        }
+        .sidebar-nav li a:hover { background: rgba(255,255,255,0.04); color: #111; }
+        .sidebar-nav li a.active { background: rgba(124,58,237,0.12); color: #7c3aed; border-left: 3px solid #7c3aed; }
+        .sidebar-nav li a i { width: 16px; }
+        .sidebar-footer { margin-top: auto; padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.06); }
+        .sidebar-footer a { display: flex; align-items: center; gap: 8px; color: #555; text-decoration: none; font-size: 0.85rem; }
+        .sidebar-footer a:hover { color: #111; }
+
+        /* ── MAIN ── */
+        .main-content { margin-left: 220px; flex: 1; padding: 36px 32px; }
+        .page-title { font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; }
+        .page-subtitle { color: #555; font-size: 0.88rem; margin-bottom: 28px; }
+
+        /* ── CARDS ── */
+        .panel-card {
+            background: #ffffff; border: 1px solid #e5e7eb;
+            border-radius: 12px; padding: 24px; height: 100%;
+        }
+        .panel-card .panel-title {
+            font-size: 0.95rem; font-weight: 700; margin-bottom: 18px;
+            display: flex; align-items: center; gap: 8px; color: #7c3aed;
+        }
+        .panel-card .panel-title i { font-size: 1.1rem; }
+
+        /* Upload area */
+        .upload-area {
+            border: 2px dashed rgba(124,58,237,0.3); border-radius: 10px;
+            padding: 40px 20px; text-align: center; cursor: pointer;
+            transition: border-color 0.2s; margin-bottom: 16px;
+        }
+        .upload-area:hover { border-color: #7c3aed; }
+        .upload-area i { font-size: 2.5rem; color: #7c3aed; margin-bottom: 12px; display: block; }
+        .upload-area .drop-text { font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; }
+        .upload-area .browse-text { color: #555; font-size: 0.82rem; }
+        .upload-area input[type="file"] { display: none; }
+
+        .warning-box {
+            background: rgba(255,193,7,0.1); border: 1px solid rgba(255,193,7,0.3);
+            color: #ffc107; border-radius: 8px; padding: 10px 14px;
+            font-size: 0.82rem; margin-bottom: 16px;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .btn-predict {
+            width: 100%; background: #7c3aed; color: #111; border: none;
+            padding: 12px; border-radius: 8px; font-size: 0.95rem; font-weight: 600;
+            cursor: pointer; transition: background 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-predict:hover { background: #7c3aed; }
+
+        /* Result area */
+        .result-empty {
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; min-height: 280px; color: #444; text-align: center;
+        }
+        .result-empty i { font-size: 3rem; margin-bottom: 14px; color: #2a3550; }
+        .result-empty p { font-size: 0.88rem; max-width: 220px; line-height: 1.6; }
+
+        .result-content { text-align: center; }
+        .result-content img { width: 100%; max-width: 300px; border-radius: 10px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.08); }
+
+        .result-badge {
+            display: inline-block; padding: 8px 24px; border-radius: 20px;
+            font-size: 1rem; font-weight: 700; margin-bottom: 10px;
+        }
+        .result-badge.cancer { background: rgba(124,58,237,0.2); color: #7c3aed; border: 1px solid rgba(124,58,237,0.4); }
+        .result-badge.non-cancer { background: rgba(46,204,113,0.2); color: #2ecc71; border: 1px solid rgba(46,204,113,0.4); }
+        .result-badge.uncertain { background: rgba(243,156,18,0.2); color: #f39c12; border: 1px solid rgba(243,156,18,0.4); }
+
+        .confidence { color: #555; font-size: 0.88rem; margin-top: 8px; }
+
+        .warning-result {
+            background: rgba(243,156,18,0.1); border: 1px solid rgba(243,156,18,0.3);
+            color: #f39c12; border-radius: 8px; padding: 10px 14px;
+            font-size: 0.82rem; margin-top: 12px; text-align: left; line-height: 1.5;
+        }
+
+        /* Selected file name */
+        .file-name { color: #7c3aed; font-size: 0.82rem; margin-top: 8px; }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="sidebar-brand"><i class="bi bi-heart-pulse-fill"></i> Oral Cancer</div>
+
+    <div class="sidebar-section">Main</div>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'user_home' %}"><i class="bi bi-house"></i> Home</a></li>
+        <li><a href="{% url 'predict_image' %}" class="active"><i class="bi bi-search-heart"></i> Predict</a></li>
+    </ul>
+
+    <div class="sidebar-section">Reports</div>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'train_model' %}"><i class="bi bi-graph-up"></i> Train Model</a></li>
+        <li><a href="{% url 'my_results' %}"><i class="bi bi-clock-history"></i> My Results</a></li>
+        <li><a href="{% url 'user_profile' %}"><i class="bi bi-person"></i> Profile</a></li>
+    </ul>
+
+    <div class="sidebar-footer">
+        <a href="{% url 'index' %}"><i class="bi bi-box-arrow-right"></i> Logout</a>
+    </div>
+</div>
+
+<!-- Main -->
+<div class="main-content">
+    <div class="page-title">Predict</div>
+    <div class="page-subtitle">Upload an oral image to detect cancer</div>
+
+    <div class="row g-4">
+
+        <!-- Upload Panel -->
+        <div class="col-md-6">
+            <div class="panel-card">
+                <div class="panel-title"><i class="bi bi-cloud-upload"></i> Upload Image</div>
+
+                <div class="warning-box">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    Only clear oral cavity images are accepted.
+                </div>
+
+                <form method="POST" enctype="multipart/form-data" action="{% url 'predict_image' %}" id="uploadForm">
+                    {% csrf_token %}
+                    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                        <i class="bi bi-cloud-arrow-up"></i>
+                        <div class="drop-text">Drop Image Here</div>
+                        <div class="browse-text">or click to browse files</div>
+                        <div class="browse-text mt-1">JPG, PNG supported</div>
+                        <input type="file" name="image" id="fileInput" accept="image/*" required onchange="showFileName(this)">
+                    </div>
+                    <div class="file-name" id="fileName"></div>
+                    <button type="submit" class="btn-predict mt-3">
+                        <i class="bi bi-play-circle"></i> Run Detection
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Result Panel -->
+        <div class="col-md-6">
+            <div class="panel-card">
+                <div class="panel-title"><i class="bi bi-clipboard2-pulse"></i> Detection Result</div>
+
+                {% if label %}
+                <div class="result-content">
+                    {% if image_path %}
+                        <img src="/{{ image_path }}" alt="Uploaded Image">
+                    {% endif %}
+                    <div class="result-badge {% if label == 'Cancer' %}cancer{% elif label == 'Non-Cancer' %}non-cancer{% else %}uncertain{% endif %}">
+                        {% if label == 'Cancer' %}<i class="bi bi-exclamation-triangle-fill me-1"></i>{% endif %}
+                        {{ label }}
+                    </div>
+                    {% if score %}
+                        <div class="confidence">Confidence: {{ score }}%</div>
+                    {% endif %}
+                    {% if warning %}
+                        <div class="warning-result">
+                            <i class="bi bi-exclamation-circle-fill me-1"></i>{{ warning }}
+                        </div>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="result-empty">
+                    <i class="bi bi-image"></i>
+                    <p>Upload an image and run the model to see the detection result here.</p>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function showFileName(input) {
+    const name = input.files[0] ? input.files[0].name : '';
+    document.getElementById('fileName').textContent = name ? 'Selected: ' + name : '';
+}
+</script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

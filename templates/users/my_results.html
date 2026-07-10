@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Results - Oral Cancer</title>
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #f5f7fa; color: #111; font-family: 'Segoe UI', Inter, sans-serif; min-height: 100vh; display: flex; }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 220px; min-height: 100vh; background: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            display: flex; flex-direction: column; padding: 24px 0;
+            position: fixed; top: 0; left: 0; bottom: 0;
+        }
+        .sidebar-brand { padding: 0 20px 28px 20px; font-size: 1.1rem; font-weight: 700; color: #7c3aed; display: flex; align-items: center; gap: 8px; text-decoration: none; }
+        .sidebar-brand i { color: #f97316; }
+        .sidebar-section { padding: 8px 20px 4px 20px; font-size: 0.7rem; color: #444; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 8px; }
+        .sidebar-nav { list-style: none; padding: 0; }
+        .sidebar-nav li a {
+            display: flex; align-items: center; gap: 12px;
+            padding: 11px 20px; color: #555; text-decoration: none;
+            font-size: 0.88rem; transition: all 0.2s;
+        }
+        .sidebar-nav li a:hover { background: rgba(255,255,255,0.04); color: #111; }
+        .sidebar-nav li a.active { background: rgba(74,158,255,0.12); color: #7c3aed; border-left: 3px solid #7c3aed; }
+        .sidebar-nav li a i { width: 18px; }
+        .sidebar-footer { margin-top: auto; padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.06); }
+        .sidebar-footer a { display: flex; align-items: center; gap: 8px; color: #555; text-decoration: none; font-size: 0.85rem; }
+        .sidebar-footer a:hover { color: #111; }
+
+        /* MAIN */
+        .main-content { margin-left: 220px; flex: 1; padding: 36px 32px; }
+        .page-title { font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; }
+        .page-subtitle { color: #555; font-size: 0.88rem; margin-bottom: 28px; }
+
+        /* HEADER ROW */
+        .results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .results-header h5 { font-size: 1rem; font-weight: 700; }
+        .count-badge { background: rgba(74,158,255,0.15); color: #4a9eff; border: 1px solid rgba(74,158,255,0.3); padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; }
+
+        /* RESULT CARD */
+        .result-card {
+            background: #ffffff; border: 1px solid #e5e7eb;
+            border-radius: 12px; overflow: hidden;
+        }
+        .result-card .card-img {
+            width: 100%; height: 160px; object-fit: cover;
+            background: #f0f2f5; display: flex; align-items: center; justify-content: center;
+        }
+        .result-card .card-img img { width: 100%; height: 160px; object-fit: cover; }
+        .result-card .card-img .no-img { color: #2a3550; font-size: 2.5rem; display: flex; align-items: center; justify-content: center; height: 160px; }
+        .result-card .card-body { padding: 14px 16px; }
+
+        .label-badge {
+            display: inline-block; padding: 3px 12px; border-radius: 12px;
+            font-size: 0.75rem; font-weight: 600; margin-bottom: 8px;
+        }
+        .label-cancer { background: rgba(124,58,237,0.15); color: #7c3aed; border: 1px solid rgba(124,58,237,0.3); }
+        .label-noncancer { background: rgba(46,204,113,0.15); color: #2ecc71; border: 1px solid rgba(46,204,113,0.3); }
+
+        .result-date { color: #555; font-size: 0.78rem; margin-bottom: 10px; }
+        .result-score { color: #444; font-size: 0.82rem; margin-bottom: 12px; }
+
+        .btn-delete {
+            background: #7c3aed; color: #111; border: none;
+            padding: 6px 16px; border-radius: 6px; font-size: 0.8rem;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .btn-delete:hover { background: #6d28d9; }
+
+        /* EMPTY STATE */
+        .empty-state { text-align: center; padding: 80px 20px; color: #444; }
+        .empty-state i { font-size: 3rem; margin-bottom: 16px; display: block; }
+        .empty-state p { font-size: 0.9rem; }
+        .empty-state a { color: #4a9eff; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <a href="{% url 'user_home' %}" class="sidebar-brand"><i class="bi bi-heart-pulse-fill"></i> Oral Cancer</a>
+
+    <div class="sidebar-section">Main</div>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'user_home' %}"><i class="bi bi-house"></i> Home</a></li>
+        <li><a href="{% url 'predict_image' %}"><i class="bi bi-search-heart"></i> Predict</a></li>
+    </ul>
+
+    <div class="sidebar-section">Reports</div>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'train_model' %}"><i class="bi bi-graph-up"></i> Train Model</a></li>
+        <li><a href="{% url 'my_results' %}" class="active"><i class="bi bi-clock-history"></i> My Results</a></li>
+        <li><a href="{% url 'user_profile' %}"><i class="bi bi-person"></i> Profile</a></li>
+    </ul>
+
+    <div class="sidebar-footer">
+        <a href="{% url 'index' %}"><i class="bi bi-box-arrow-right"></i> Logout</a>
+    </div>
+</div>
+
+<!-- Main -->
+<div class="main-content">
+    <div class="page-title">My Results</div>
+    <div class="page-subtitle">View and manage your complete prediction history</div>
+
+    <div class="results-header">
+        <h5>All Predictions</h5>
+        <span class="count-badge">{{ count }} record{{ count|pluralize }}</span>
+    </div>
+
+    {% if results %}
+    <div class="row g-3">
+        {% for r in results %}
+        <div class="col-md-4 col-sm-6">
+            <div class="result-card">
+                <div class="card-img">
+                    {% if r.image %}
+                        <img src="/{{ r.image }}" alt="Scan Image">
+                    {% else %}
+                        <div class="no-img"><i class="bi bi-image"></i></div>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <span class="label-badge {% if r.label == 'Cancer' %}label-cancer{% else %}label-noncancer{% endif %}">
+                        {{ r.label }}
+                    </span>
+                    {% if r.score %}
+                        <div class="result-score">Confidence: {{ r.score|floatformat:2 }}%</div>
+                    {% endif %}
+                    <div class="result-date"><i class="bi bi-calendar3 me-1"></i>{{ r.created_at|date:"d M Y, H:i" }}</div>
+                    <a href="{% url 'delete_result' r.id %}" class="btn-delete" onclick="return confirm('Delete this result?')">
+                        <i class="bi bi-trash me-1"></i>Delete
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="bi bi-inbox"></i>
+        <p>No predictions yet. <a href="{% url 'predict_image' %}">Run your first scan</a></p>
+    </div>
+    {% endif %}
+</div>
+
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>
+

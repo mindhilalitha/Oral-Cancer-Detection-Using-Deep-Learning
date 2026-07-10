@@ -1,0 +1,194 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Train Model - Oral Cancer</title>
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #f5f7fa; color: #111; font-family: 'Segoe UI', Inter, sans-serif; min-height: 100vh; display: flex; }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 220px; min-height: 100vh; background: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            display: flex; flex-direction: column; padding: 24px 0;
+            position: fixed; top: 0; left: 0; bottom: 0;
+        }
+        .sidebar-brand { padding: 0 20px 28px 20px; font-size: 1.1rem; font-weight: 700; color: #7c3aed; display: flex; align-items: center; gap: 8px; text-decoration: none; }
+        .sidebar-brand i { color: #f97316; }
+        .sidebar-section { padding: 8px 20px 4px 20px; font-size: 0.7rem; color: #444; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 8px; }
+        .sidebar-nav { list-style: none; padding: 0; }
+        .sidebar-nav li a {
+            display: flex; align-items: center; gap: 12px;
+            padding: 11px 20px; color: #555; text-decoration: none;
+            font-size: 0.88rem; transition: all 0.2s;
+        }
+        .sidebar-nav li a:hover { background: rgba(255,255,255,0.04); color: #111; }
+        .sidebar-nav li a.active { background: rgba(124,58,237,0.12); color: #7c3aed; border-left: 3px solid #7c3aed; }
+        .sidebar-nav li a i { width: 18px; }
+        .sidebar-footer { margin-top: auto; padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.06); }
+        .sidebar-footer a { display: flex; align-items: center; gap: 8px; color: #555; text-decoration: none; font-size: 0.85rem; }
+        .sidebar-footer a:hover { color: #111; }
+
+        /* MAIN */
+        .main-content { margin-left: 220px; flex: 1; padding: 36px 32px; }
+        .page-title { font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; }
+        .page-subtitle { color: #555; font-size: 0.88rem; margin-bottom: 28px; }
+
+        /* PANEL */
+        .panel-card {
+            background: #ffffff; border: 1px solid #e5e7eb;
+            border-radius: 12px; padding: 28px;
+        }
+        .panel-title {
+            font-size: 0.95rem; font-weight: 700; margin-bottom: 20px;
+            display: flex; align-items: center; gap: 8px; color: #7c3aed;
+        }
+
+        /* ACCURACY BADGE */
+        .accuracy-box {
+            background: rgba(46,204,113,0.1); border: 1px solid rgba(46,204,113,0.3);
+            border-radius: 10px; padding: 20px 24px; margin-bottom: 24px;
+            display: flex; align-items: center; gap: 16px;
+        }
+        .accuracy-box .acc-icon { font-size: 2rem; color: #2ecc71; }
+        .accuracy-box .acc-label { font-size: 0.8rem; color: #555; margin-bottom: 4px; }
+        .accuracy-box .acc-value { font-size: 1.8rem; font-weight: 800; color: #2ecc71; }
+
+        /* PLOT */
+        .plot-container { border-radius: 10px; overflow: hidden; border: 1px solid #e5e7eb; }
+        .plot-container img { width: 100%; display: block; }
+
+        /* TRAIN BUTTON */
+        .btn-train {
+            background: #7c3aed; color: #111; border: none;
+            padding: 12px 32px; border-radius: 8px; font-size: 0.95rem;
+            font-weight: 600; cursor: pointer; transition: background 0.2s;
+            display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
+        }
+        .btn-train:hover { background: #7c3aed; color: #111; }
+
+        .info-box {
+            background: rgba(74,158,255,0.08); border: 1px solid rgba(124,58,237,0.2);
+            border-radius: 8px; padding: 14px 18px; margin-bottom: 20px;
+            font-size: 0.85rem; color: #444; display: flex; align-items: flex-start; gap: 10px;
+        }
+        .info-box i { color: #7c3aed; margin-top: 2px; flex-shrink: 0; }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <a href="{% url 'user_home' %}" class="sidebar-brand"><i class="bi bi-heart-pulse-fill"></i> Oral Cancer</a>
+
+    <div class="sidebar-section">Main</div>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'user_home' %}"><i class="bi bi-house"></i> Home</a></li>
+        <li><a href="{% url 'predict_image' %}"><i class="bi bi-search-heart"></i> Predict</a></li>
+    </ul>
+
+    <div class="sidebar-section">Reports</div>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'train_model' %}" class="active"><i class="bi bi-graph-up"></i> Train Model</a></li>
+        <li><a href="{% url 'my_results' %}"><i class="bi bi-clock-history"></i> My Results</a></li>
+        <li><a href="{% url 'user_profile' %}"><i class="bi bi-person"></i> Profile</a></li>
+    </ul>
+
+    <div class="sidebar-footer">
+        <a href="{% url 'index' %}"><i class="bi bi-box-arrow-right"></i> Logout</a>
+    </div>
+</div>
+
+<!-- Main -->
+<div class="main-content">
+    <div class="page-title">Train Model</div>
+    <div class="page-subtitle">Train the oral cancer detection model with the dataset</div>
+
+    {% if accuracy %}
+    <!-- Results after training -->
+    <div class="row g-4">
+        <div class="col-md-8">
+            <div class="panel-card">
+                <div class="panel-title"><i class="bi bi-check-circle-fill" style="color:#2ecc71"></i> Training Complete!</div>
+
+                <div class="accuracy-box">
+                    <div class="acc-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                    <div>
+                        <div class="acc-label">Validation Accuracy</div>
+                        <div class="acc-value">{{ accuracy }}%</div>
+                    </div>
+                </div>
+
+                {% if plot_path %}
+                <div class="plot-container">
+                    <img src="/{{ plot_path }}" alt="Training Accuracy Plot">
+                </div>
+                {% endif %}
+
+                <div class="mt-3">
+                    <a href="{% url 'predict_image' %}" class="btn-train">
+                        <i class="bi bi-search-heart"></i> Go to Predict
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="panel-card">
+                <div class="panel-title"><i class="bi bi-info-circle"></i> Training Info</div>
+                <div style="font-size:0.85rem; color:#888; line-height:1.8;">
+                    <div class="mb-2"><span style="color:#aaa;">Status:</span> <span style="color:#2ecc71;">✓ Complete</span></div>
+                    <div class="mb-2"><span style="color:#aaa;">Val Accuracy:</span> <span style="color:#fff;">{{ accuracy }}%</span></div>
+                    <div class="mb-2"><span style="color:#aaa;">Classes:</span> <span style="color:#fff;">Cancer / Non-Cancer</span></div>
+                    <div class="mb-2"><span style="color:#aaa;">Model:</span> <span style="color:#fff;">CNN</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- Before training -->
+    <div class="row g-4">
+        <div class="col-md-7">
+            <div class="panel-card">
+                <div class="panel-title"><i class="bi bi-cpu"></i> Start Training</div>
+
+                <div class="info-box">
+                    <i class="bi bi-exclamation-circle-fill"></i>
+                    Training will use the dataset in the media folder. This may take several minutes depending on your system.
+                </div>
+
+                <p style="color:#888; font-size:0.88rem; margin-bottom:24px;">
+                    Click the button below to train the oral cancer detection model. The model will be trained on cancer and non-cancer images and saved for prediction.
+                </p>
+
+                <a href="{% url 'train_model' %}" class="btn-train">
+                    <i class="bi bi-play-circle"></i> Start Training
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="panel-card">
+                <div class="panel-title"><i class="bi bi-info-circle"></i> Training Details</div>
+                <div style="font-size:0.85rem; color:#888; line-height:2;">
+                    <div><span style="color:#aaa;">Architecture:</span> CNN</div>
+                    <div><span style="color:#aaa;">Classes:</span> Cancer, Non-Cancer</div>
+                    <div><span style="color:#aaa;">Optimizer:</span> Adam</div>
+                    <div><span style="color:#aaa;">Loss:</span> Binary Crossentropy</div>
+                    <div><span style="color:#aaa;">Epochs:</span> 200</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

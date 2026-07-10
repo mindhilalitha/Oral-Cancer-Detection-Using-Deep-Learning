@@ -1,0 +1,85 @@
+{% extends 'users/user_base.html' %}
+
+{% block content %}
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f5f7fa;
+    }
+
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 90vh;
+    }
+
+    .card {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        text-align: center;
+        width: 420px;
+    }
+
+    h2 {
+        margin-bottom: 15px;
+    }
+
+    img {
+        margin-top: 15px;
+        border-radius: 10px;
+        max-width: 100%;
+    }
+
+    .result-text {
+        margin-top: 20px;
+        font-size: 18px;
+    }
+
+    .btn {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+    }
+
+    .btn:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<div class="container">
+    <div class="card">
+
+        <h2>Detection Result</h2>
+
+        <img src="{{ image_url }}" alt="Detected Image">
+
+        <div class="result-text">
+            The detected result is
+            <span style="color: 
+                {% if label == 'Cancer' %}red
+                {% elif label == 'Non-Cancer' %}green
+                {% else %}orange
+                {% endif %}
+            ; font-weight: bold;">
+                {{ label }}
+            </span>
+        </div>
+
+        <a href="{% url 'upload_image' %}" class="btn">
+            Upload Another Image
+        </a>
+
+    </div>
+</div>
+
+{% endblock %}

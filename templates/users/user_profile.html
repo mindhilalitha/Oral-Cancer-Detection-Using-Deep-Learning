@@ -1,0 +1,371 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Profile - Oral Cancer</title>
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: #f5f7fa;
+            color: #111;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: 220px;
+            min-height: 100vh;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            padding: 24px 0;
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            border-right: 1px solid #e5e7eb;
+            border-top: 3px solid #7c3aed;
+        }
+
+        .sidebar-brand {
+            padding: 0 20px 28px 20px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #7c3aed;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .sidebar-brand i { color: #f97316; }
+
+        .sidebar-nav {
+            flex: 1;
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-nav li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 20px;
+            color: #555;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .sidebar-nav li a:hover {
+            background: #f5f3ff;
+            color: #111;
+        }
+
+        .sidebar-nav li a.active {
+            background: rgba(124,58,237,0.1);
+            color: #7c3aed;
+            border-left: 3px solid #7c3aed;
+            font-weight: 600;
+        }
+
+        .sidebar-nav li a i {
+            font-size: 1rem;
+            width: 18px;
+        }
+
+        /* Bottom user info */
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-footer .avatar-sm {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: #ede9fe;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; color: #7c3aed;
+            flex-shrink: 0;
+        }
+
+        .sidebar-footer .user-info .name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #111;
+        }
+
+        .sidebar-footer .user-info .role {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .sidebar-logout {
+            padding: 10px 20px;
+        }
+
+        .sidebar-logout a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #555;
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+
+        .sidebar-logout a:hover { color: #7c3aed; }
+
+        /* ── MAIN CONTENT ── */
+        .main-content {
+            margin-left: 220px;
+            flex: 1;
+            padding: 40px 36px;
+            min-height: 100vh;
+        }
+
+        .page-title {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .page-subtitle {
+            color: #555;
+            font-size: 0.9rem;
+            margin-bottom: 32px;
+        }
+
+        /* ── PROFILE CARD (left) ── */
+        .profile-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 36px 24px;
+            text-align: center;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar-circle {
+            width: 88px; height: 88px;
+            border-radius: 50%;
+            background: #ede9fe;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.4rem; color: #7c3aed;
+            margin: 0 auto 16px auto;
+            border: 3px solid #ddd6fe;
+        }
+
+        .profile-card h4 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .profile-card .email {
+            color: #555;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        .badge-user {
+            display: inline-block;
+            border: 1px solid #7c3aed;
+            color: #7c3aed;
+            font-size: 0.72rem;
+            padding: 5px 16px;
+            border-radius: 4px;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        /* ── DETAILS CARD (right) ── */
+        .details-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 30px 28px;
+        }
+
+        .details-card .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
+
+        .detail-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 7px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.88rem;
+        }
+
+        .detail-row:last-child { border-bottom: none; }
+
+        .detail-label { color: #888; width: 100px; flex-shrink: 0; }
+        .detail-value { color: #111; font-weight: 500; }
+        .status-active { color: #16a34a; font-weight: 600; }
+
+        /* ── DANGER ZONE ── */
+        .danger-zone {
+            margin-top: 28px;
+            padding-top: 22px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .danger-zone .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .btn-signout {
+            background: #f3f4f6;
+            color: #111;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.2s;
+        }
+
+        .btn-signout:hover { background: #e5e7eb; color: #111; }
+
+        .btn-deactivate {
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.2s;
+        }
+
+        .btn-deactivate:hover { background: #fecaca; color: #dc2626; }
+    </style>
+</head>
+<body>
+
+<!-- ── SIDEBAR ── -->
+<div class="sidebar">
+    <div class="sidebar-brand">
+        <i class="bi bi-heart-pulse-fill"></i> Oral Cancer
+    </div>
+
+    <ul class="sidebar-nav">
+        <li>
+            <a href="{% url 'user_home' %}">
+                <i class="bi bi-grid"></i> Home
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'train_model' %}">
+                <i class="bi bi-cpu"></i> Train Model
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'predict_image' %}">
+                <i class="bi bi-search"></i> Predict
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'user_profile' %}" class="active">
+                <i class="bi bi-person"></i> Profile
+            </a>
+        </li>
+    </ul>
+
+    <!-- Bottom: user info + logout -->
+    <div class="sidebar-footer">
+        <div class="avatar-sm">
+            <i class="bi bi-person-fill"></i>
+        </div>
+        <div class="user-info">
+            <div class="name">{{ user.name }}</div>
+            <div class="role">User</div>
+        </div>
+    </div>
+    <div class="sidebar-logout">
+        <a href="{% url 'index' %}">
+            <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
+    </div>
+</div>
+
+<!-- ── MAIN CONTENT ── -->
+<div class="main-content">
+    <div class="page-title">Your Profile</div>
+    <div class="page-subtitle">Manage your account and settings</div>
+
+    <div class="row g-4 align-items-stretch">
+
+        <!-- Left card -->
+        <div class="col-md-4">
+            <div class="profile-card">
+                <div class="avatar-circle">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <h4>{{ user.name }}</h4>
+                <p class="email">{{ user.email }}</p>
+                <span class="badge-user">User Account</span>
+            </div>
+        </div>
+
+        <!-- Right card -->
+        <div class="col-md-8">
+            <div class="details-card">
+                <div class="section-title">Account Details</div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Name</span>
+                    <span class="detail-value">{{ user.name }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Email</span>
+                    <span class="detail-value">{{ user.email }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Role</span>
+                    <span class="detail-value">User</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Status</span>
+                    <span class="detail-value status-active">{{ user.status|capfirst }}</span>
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="danger-zone">
+                    <div class="section-title">Danger Zone</div>
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a href="{% url 'index' %}" class="btn-signout">Sign Out</a>
+                        <a href="#" class="btn-deactivate">Deactivate Account</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>
+
